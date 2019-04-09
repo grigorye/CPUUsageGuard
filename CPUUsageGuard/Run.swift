@@ -17,11 +17,16 @@ func run(config: Config) {
     
     repeating(interval: config.interval) {
         dump(Date(), name: "date", maxDepth: 0)
-        statsFor(processFilter) { statsResult in
-            guard let stats = try? statsResult.get() else {
+        pgrep(pattern: processFilter.pattern) { pgrepResult in
+            guard let pids = try? pgrepResult.get() else {
                 fatalError()
             }
-            driver.process(stats)
+            pcpu(pids: pids, completion: { (pcpuResult) in
+                guard let pcpus = try? pcpuResult.get() else {
+                    fatalError()
+                }
+                driver.process(pcpus: pcpus)
+            })
         }
     }
 }
