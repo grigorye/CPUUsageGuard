@@ -12,6 +12,9 @@
 		C46D0928225ABA3100656041 /* Driver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0927225ABA3100656041 /* Driver.swift */; };
 		C46D092A225ABA8F00656041 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0929225ABA8F00656041 /* Types.swift */; };
 		C46D092C225ABBDC00656041 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D092B225ABBDC00656041 /* Config.swift */; };
+		C46D0934225BD3E300656041 /* pgrep.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0933225BD3E300656041 /* pgrep.swift */; };
+		C46D0937225C590E00656041 /* pcpu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0936225C590E00656041 /* pcpu.swift */; };
+		C46D0939225C63F700656041 /* exec.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0938225C63F700656041 /* exec.swift */; };
 		C4A7345C225A7CA500DF6364 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A7345B225A7CA500DF6364 /* main.swift */; };
 		C4A73463225A878F00DF6364 /* Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A73462225A878F00DF6364 /* Run.swift */; };
 /* End PBXBuildFile section */
@@ -34,6 +37,11 @@
 		C46D0927225ABA3100656041 /* Driver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Driver.swift; sourceTree = "<group>"; };
 		C46D0929225ABA8F00656041 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		C46D092B225ABBDC00656041 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		C46D092F225BCFD100656041 /* CPUUsageGuard-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CPUUsageGuard-Bridging-Header.h"; sourceTree = "<group>"; };
+		C46D0933225BD3E300656041 /* pgrep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pgrep.swift; sourceTree = "<group>"; };
+		C46D0935225C4B6F00656041 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C46D0936225C590E00656041 /* pcpu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pcpu.swift; sourceTree = "<group>"; };
+		C46D0938225C63F700656041 /* exec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = exec.swift; sourceTree = "<group>"; };
 		C4A73458225A7CA500DF6364 /* CPUUsageGuard */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CPUUsageGuard; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4A7345B225A7CA500DF6364 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		C4A73462225A878F00DF6364 /* Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Run.swift; sourceTree = "<group>"; };
@@ -70,12 +78,17 @@
 		C4A7345A225A7CA500DF6364 /* CPUUsageGuard */ = {
 			isa = PBXGroup;
 			children = (
+				C46D092F225BCFD100656041 /* CPUUsageGuard-Bridging-Header.h */,
+				C46D0935225C4B6F00656041 /* Info.plist */,
 				C4A7345B225A7CA500DF6364 /* main.swift */,
 				C4A73462225A878F00DF6364 /* Run.swift */,
 				C46D0927225ABA3100656041 /* Driver.swift */,
 				C46D0929225ABA8F00656041 /* Types.swift */,
 				C46D092B225ABBDC00656041 /* Config.swift */,
 				C46D0923225AB9B400656041 /* Stats.swift */,
+				C46D0938225C63F700656041 /* exec.swift */,
+				C46D0933225BD3E300656041 /* pgrep.swift */,
+				C46D0936225C590E00656041 /* pcpu.swift */,
 				C46D0925225AB9E100656041 /* Repeating.swift */,
 			);
 			path = CPUUsageGuard;
@@ -113,6 +126,7 @@
 				TargetAttributes = {
 					C4A73457225A7CA500DF6364 = {
 						CreatedOnToolsVersion = 10.2;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
@@ -141,9 +155,12 @@
 				C4A7345C225A7CA500DF6364 /* main.swift in Sources */,
 				C46D0928225ABA3100656041 /* Driver.swift in Sources */,
 				C46D0926225AB9E100656041 /* Repeating.swift in Sources */,
+				C46D0934225BD3E300656041 /* pgrep.swift in Sources */,
 				C46D092C225ABBDC00656041 /* Config.swift in Sources */,
 				C46D092A225ABA8F00656041 /* Types.swift in Sources */,
+				C46D0939225C63F700656041 /* exec.swift in Sources */,
 				C46D0924225AB9B400656041 /* Stats.swift in Sources */,
+				C46D0937225C590E00656041 /* pcpu.swift in Sources */,
 				C4A73463225A878F00DF6364 /* Run.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,9 +286,18 @@
 		C4A73460225A7CA500DF6364 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 465NA5BW7E;
+				INFOPLIST_FILE = "$(SRCROOT)/CPUUsageGuard/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CPUUsageGuard-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -279,9 +305,17 @@
 		C4A73461225A7CA500DF6364 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 465NA5BW7E;
+				INFOPLIST_FILE = "$(SRCROOT)/CPUUsageGuard/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CPUUsageGuard-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

@@ -7,68 +7,70 @@
 //
 
 import Foundation
+import Darwin
 
 struct ProcessFilter {
     let pattern: String
     let topDelay: Int
 }
 
-typealias CPUUsage = Int
+typealias CPUUsage = Int32
 
-func statsFor(_ processFilter: ProcessFilter, completion: @escaping (Result<[PID:CPUUsage], Error>) -> Void) {
-    let process = Process()
-    
-    let standardOutputPipe = Pipe()
-    let standardErrorPipe = Pipe()
-    
-    let topDelay = processFilter.topDelay
-    let pattern = processFilter.pattern
-    
-    process.executableURL = URL(fileURLWithPath: "/bin/sh")
-    process.arguments = [
-        "-c",
-        "top -l 2 -s \(topDelay) -stats pid,cpu $(pgrep -f '\(pattern)'|while read i; do echo -pid \"$i\"; done)|perl -e'print reverse<>'|sed -e '/^PID/,$ d'"
-    ]
-    process.standardOutput = standardOutputPipe
-    process.standardError = standardErrorPipe
-    process.terminationHandler = { process in
-        completion(.init() {
-            try processTerminatedProcess(process, standardOutputPipe: standardOutputPipe, standardErrorPipe: standardErrorPipe)
-            })
+func CPUUsageFor(pid: pid_t) throws -> Int32 {
+    enum Error: Swift.Error {
+        case failed_task_for_pid(kr: Int32, pid: Int32)
+        case failed_proc_pidinfo(e: Int32, pid: Int32)
     }
     
-    try! process.run()
+    try acquireTaskportRight()
+    
+    var task: task_t = .init()
+    let kr = task_for_pid(mach_task_self_, pid, &task)
+    guard kr == KERN_SUCCESS else {
+        print(String(cString: mach_error_string(kr)))
+        throw Error.failed_task_for_pid(kr: kr, pid: pid)
+    }
+    
+    var info: proc_threadinfo = .init()
+    do {
+        let error = proc_pidinfo(pid, PROC_PIDTHREADINFO, 1, &info, Int32(MemoryLayout.size(ofValue: info)))
+        guard error == 0 else {
+            throw Error.failed_proc_pidinfo(e: error, pid: pid)
+        }
+    }
+    let cpu_usage = info.pth_cpu_usage
+    dump(info)
+    if cpu_usage > 0 {
+        _ = cpu_usage
+    }
+    return cpu_usage
 }
 
-private func processTerminatedProcess(_ process: Process, standardOutputPipe: Pipe, standardErrorPipe: Pipe) throws -> [PID:CPUUsage] {
-    do {
-        let terminationReason = process.terminationReason
-        enum Error: Swift.Error {
-            case badTerminationReason(Process.TerminationReason)
-            case badTerminationStatus(Int32)
+func acquireTaskportRight() throws {
+    try "system.privilege.taskport:".data(using: .utf8)?.withUnsafeBytes({ (bytes: UnsafePointer<Int8>) -> Void in
+        var taskPortItem = AuthorizationItem(name: bytes, valueLength: 0, value: nil, flags: 0)
+        var rights = AuthorizationRights(count: 1, items: &taskPortItem)
+        var author: AuthorizationRef?
+        let authFlags: AuthorizationFlags = [.extendRights, .preAuthorize, .interactionAllowed, AuthorizationFlags(rawValue: AuthorizationFlags.RawValue(1 << 5))]
+        do {
+            let status = AuthorizationCreate(nil, nil, authFlags, &author)
+            
+            enum Error: Swift.Error {
+                case AuthorizationCreateFailure(OSStatus)
+            }
+            guard status == errAuthorizationSuccess else {
+                throw Error.AuthorizationCreateFailure(status)
+            }
         }
-        guard case .exit = terminationReason else {
-            throw Error.badTerminationReason(terminationReason)
+        do {
+            var outRightsRef: UnsafeMutablePointer<AuthorizationRights>?
+            let status = AuthorizationCopyRights(author!, &rights, nil, authFlags, &outRightsRef)
+            enum Error: Swift.Error {
+                case AuthorizationCreateFailure(OSStatus)
+            }
+            guard status == errAuthorizationSuccess else {
+                throw Error.AuthorizationCreateFailure(status)
+            }
         }
-        let terminationStatus = process.terminationStatus
-        guard 0 == terminationStatus else {
-            throw Error.badTerminationStatus(terminationStatus)
-        }
-        let data = standardOutputPipe.fileHandleForReading.readDataToEndOfFile()
-        let linesCombined = String(data: data, encoding: .utf8)!.trimmingCharacters(in: .controlCharacters)
-        let lines = linesCombined.split(separator: "\n")
-        let result: [PID:CPUUsage] = lines.reduce([:]) { (acc, line) in
-            let components = line.split(separator: " ")
-            let pid = Int32(components[0])!
-            let cpu = Int(Float(components[1])!)
-            var r = acc
-            r[pid] = cpu
-            return r
-        }
-        return result
-    } catch {
-        let standardErrorData = standardErrorPipe.fileHandleForReading.readDataToEndOfFile()
-        dump(standardErrorData, name: "standardErrorData")
-        throw error
-    }
+    })
 }
