@@ -12,16 +12,19 @@ typealias Samples = Int
 
 class Driver {
     
-    init(cpuUsageThreshold: Int, samplesThreshold: Int, action: @escaping (PID) -> Void) {
+    init(cpuUsageThreshold: Float, samplesThreshold: Int, action: @escaping (PID) -> Void) {
         self.cpuUsageThreshold = cpuUsageThreshold
         self.samplesThreshold = samplesThreshold
         self.action = action
     }
     
-    func process(_ stats: [PID:CPUUsage]) {
+    func process(pcpus: [pid_t:Float]) {
         dump(monitoredPIDs, name: "oldMonitoredPIDs")
-        dump(stats, name: "stats", maxDepth: 0)
-        let cpuUsageExceedingStats = stats.filter { (_, cpuUsage) in cpuUsage > cpuUsageThreshold }
+        dump(pcpus, name: "pcpus", maxDepth: 0)
+        let cpuUsageExceedingStats = pcpus.filter { (arg) -> Bool in
+            let (_, cpuUsage) = arg
+            return cpuUsage > cpuUsageThreshold
+        }
         dump(cpuUsageExceedingStats, name: "cpuUsageExceedingStats")
         let obsoletedPIDs = monitoredPIDs.keys.filter { !cpuUsageExceedingStats.keys.contains($0) }
         dump(obsoletedPIDs, name: "obsoletedPIDs")
@@ -41,7 +44,7 @@ class Driver {
         }
     }
     
-    private let cpuUsageThreshold: Int
+    private let cpuUsageThreshold: Float
     private let samplesThreshold: Int
     private let action: (PID) -> Void
     
