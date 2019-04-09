@@ -13,7 +13,7 @@ private let defaults = UserDefaults.standard
 guard let pattern = defaults.string(forKey: "pattern") else {
     fatalError("Missing -pattern.")
 }
-guard let cpuUsageThreshold = Int(defaults.string(forKey: "cpuUsageThreshold") ?? "10") else {
+guard let cpuUsageThreshold = Float(defaults.string(forKey: "cpuUsageThreshold") ?? "10") else {
     fatalError("Missing -cpuUsageThreshold.")
 }
 guard let samplesThreshold = Int(defaults.string(forKey: "samplesThreshold") ?? "5") else {

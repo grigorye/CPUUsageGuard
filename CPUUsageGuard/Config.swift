@@ -10,7 +10,7 @@ import Foundation
 
 struct Config {
     let pattern: String
-    let cpuUsageThreshold: Int
+    let cpuUsageThreshold: Float
     let samplesThreshold: Int
     let interval: TimeInterval
     let topDelay: Int
