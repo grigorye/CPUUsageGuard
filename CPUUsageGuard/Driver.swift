@@ -19,13 +19,13 @@ class Driver {
     }
     
     func process(pcpus: [pid_t:Float]) {
-        dump(monitoredPIDs, name: "oldMonitoredPIDs")
-        dump(pcpus, name: "pcpus", maxDepth: 0)
+        dump(monitoredPIDs.map {(pid: $0, age: $1.samplesOld)}, name: "oldMonitoredPIDs")
+        dump(pcpus.map {(pid: $0, pcpu: $1)}, name: "pcpus", maxDepth: 0)
         let cpuUsageExceedingStats = pcpus.filter { (arg) -> Bool in
             let (_, cpuUsage) = arg
             return cpuUsage > cpuUsageThreshold
         }
-        dump(cpuUsageExceedingStats, name: "cpuUsageExceedingStats")
+        dump(cpuUsageExceedingStats.map {(pid: $0, pcpu: $1)}, name: "cpuUsageExceedingStats")
         let obsoletedPIDs = monitoredPIDs.keys.filter { !cpuUsageExceedingStats.keys.contains($0) }
         dump(obsoletedPIDs, name: "obsoletedPIDs")
         let newPIDs = cpuUsageExceedingStats.keys.filter { !monitoredPIDs.keys.contains($0) }
@@ -37,7 +37,7 @@ class Driver {
         newPIDs.forEach {
             monitoredPIDs[$0] = AgeInfo(samplesOld: 1)
         }
-        dump(monitoredPIDs, name: "monitoredPIDs")
+        dump(monitoredPIDs.map {(pid: $0, age: $1.samplesOld)}, name: "monitoredPIDs")
         for (targetPid, ageInfo) in monitoredPIDs where ageInfo.samplesOld > samplesThreshold {
             dump(targetPid, name: "targetPid")
             action(targetPid)
