@@ -18,15 +18,17 @@ func run(config: Config) {
     repeating(interval: config.interval) {
         dump(Date(), name: "date", maxDepth: 0)
         pgrep(pattern: processFilter.pattern) { pgrepResult in
-            guard let pids = try? pgrepResult.get() else {
-                fatalError()
+            do {
+                let pids = try pgrepResult.get()
+                pcpu(pids: pids, completion: { (pcpuResult) in
+                    guard let pcpus = try? pcpuResult.get() else {
+                        fatalError()
+                    }
+                    driver.process(pcpus: pcpus)
+                })
+            } catch {
+                fatalError("\(error)")
             }
-            pcpu(pids: pids, completion: { (pcpuResult) in
-                guard let pcpus = try? pcpuResult.get() else {
-                    fatalError()
-                }
-                driver.process(pcpus: pcpus)
-            })
         }
     }
 }
