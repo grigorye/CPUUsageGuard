@@ -19,9 +19,9 @@ func exec(_ path: String, _ arguments: [String], completion: @escaping (Result<[
     process.standardOutput = standardOutputPipe
     process.standardError = standardErrorPipe
     process.terminationHandler = { process in
-        completion(.init() {
+        completion(.init(catching: {
             try parseResultFromTerminated(process, standardOutputPipe: standardOutputPipe, standardErrorPipe: standardErrorPipe)
-            })
+        }))
     }
     
     try! process.run()
