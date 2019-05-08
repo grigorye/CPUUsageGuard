@@ -9,9 +9,10 @@
 import Foundation
 
 func pgrep(pattern: String, completion: @escaping (Result<[pid_t], Error>) -> Void) {
-    exec("/usr/bin/pgrep", ["-f", pattern]) { (pgrepResult) in
+    let command = "pgrep -f \"\(pattern)\"; case $? in 0|1) exit 0 ;; *) exit $?; esac"
+    exec("/bin/sh", ["-c", command]) { (shellResult) in
         completion(.init(catching: {
-            let lines = try pgrepResult.get()
+            let lines = try shellResult.get()
             let result: [pid_t] = try lines.map { (line) in
                 enum Error: Swift.Error {
                     case pgrepOuptutParseFailure(line: String)
