@@ -1,6 +1,6 @@
 # CPUUsageGuard
 
-A simple tool to keep processes that load CPU for a long time.
+A simple tool to kill processes that load CPU for a long time.
 
 ## Usage
 
