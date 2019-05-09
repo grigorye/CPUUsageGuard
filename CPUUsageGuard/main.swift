@@ -30,7 +30,9 @@ let config = Config(pattern: pattern, cpuUsageThreshold: cpuUsageThreshold, samp
 
 dump(config, name: "config")
 
-run(config: config)
+run(config: config) { (pid) in
+    willKill(pid: pid)
+    kill(pid, SIGTERM)
+}
 
 dispatchMain()
-

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C41786FC2277843F00B26FEA /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41786FB2277843F00B26FEA /* Notifications.swift */; };
 		C46D0924225AB9B400656041 /* Stats.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0923225AB9B400656041 /* Stats.swift */; };
 		C46D0926225AB9E100656041 /* Repeating.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0925225AB9E100656041 /* Repeating.swift */; };
 		C46D0928225ABA3100656041 /* Driver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46D0927225ABA3100656041 /* Driver.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C41786FB2277843F00B26FEA /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		C46D0923225AB9B400656041 /* Stats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stats.swift; sourceTree = "<group>"; };
 		C46D0925225AB9E100656041 /* Repeating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repeating.swift; sourceTree = "<group>"; };
 		C46D0927225ABA3100656041 /* Driver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Driver.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				C46D0935225C4B6F00656041 /* Info.plist */,
 				C4A7345B225A7CA500DF6364 /* main.swift */,
 				C4A73462225A878F00DF6364 /* Run.swift */,
+				C41786FB2277843F00B26FEA /* Notifications.swift */,
 				C46D0927225ABA3100656041 /* Driver.swift */,
 				C46D0929225ABA8F00656041 /* Types.swift */,
 				C46D092B225ABBDC00656041 /* Config.swift */,
@@ -154,6 +157,7 @@
 			files = (
 				C4A7345C225A7CA500DF6364 /* main.swift in Sources */,
 				C46D0928225ABA3100656041 /* Driver.swift in Sources */,
+				C41786FC2277843F00B26FEA /* Notifications.swift in Sources */,
 				C46D0926225AB9E100656041 /* Repeating.swift in Sources */,
 				C46D0934225BD3E300656041 /* pgrep.swift in Sources */,
 				C46D092C225ABBDC00656041 /* Config.swift in Sources */,

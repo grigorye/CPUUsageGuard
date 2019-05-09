@@ -8,11 +8,11 @@
 
 import Foundation
 
-func run(config: Config) {
+func run(config: Config, kill: @escaping (pid_t) -> Void) {
     let processFilter = ProcessFilter(pattern: config.pattern, topDelay: config.topDelay)
     let driver = Driver(cpuUsageThreshold: config.cpuUsageThreshold, samplesThreshold: config.samplesThreshold) { (pid) in
-        dump(pid, name: "pid")
-        kill(pid, 3)
+        dump(pid, name: "pidToKill")
+        kill(pid)
     }
     
     repeating(interval: config.interval) {
